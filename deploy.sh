@@ -15,7 +15,7 @@ fi
 
 if [ $1 == "--dev" ]; then
     echo "> starting dev env..."
-    docker-compose -f "./.docker/docker-compose.yml" --env-file ./.docker/.env.dev up --build 
+    docker-compose -f "./.docker/docker-compose.yml" --env-file ./.docker/.env.dev --profile development up --build 
 fi
 
 if [ $1 == "--prod" ]; then

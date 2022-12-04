@@ -14,6 +14,9 @@ services:
             - $PWD/mysql-data:/var/lib/mysql
         networks:
             - netprivate
-    
+
+
 networks:
     netprivate:
+volumes:
+    mysql-workbench:

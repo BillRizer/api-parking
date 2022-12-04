@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { EEnvironments, getEnvironment } from './utils/helpers';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix(versionApi);
   app.use(cookieParser());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
 
   if (getEnvironment() == EEnvironments.DEV) {
     const config = new DocumentBuilder()
