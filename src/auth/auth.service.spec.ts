@@ -3,20 +3,7 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { CompanyService } from '../company/company.service';
 import { Company } from '../company/entities/company.entity';
-
-const mockCompany: Company = {
-  address: '123 Main St',
-  cnpj: '123123123',
-  email: 'test@example.com',
-  id: 'asdaa-asda-sdas-das',
-  max_amount_cars: 10,
-  max_amount_motorcycles: 10,
-  name: 'Test Company',
-  password: 'hashedPassword',
-  phone: '1234567890',
-  createdAt: '',
-  updatedAt: '',
-};
+import { mockCompany } from '../utils/mocks/company';
 
 describe('AuthService', () => {
   let authService: AuthService;
