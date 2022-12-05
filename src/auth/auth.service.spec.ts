@@ -1,14 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { CompanyService } from '../company/company.service';
+import { Company } from '../company/entities/company.entity';
+
+const mockCompany: Company = {
+  address: '123 Main St',
+  cnpj: '123123123',
+  email: 'test@example.com',
+  id: 'asdaa-asda-sdas-das',
+  max_amount_cars: 10,
+  max_amount_motorcycles: 10,
+  name: 'Test Company',
+  password: 'hashedPassword',
+  phone: '1234567890',
+  createdAt: '',
+  updatedAt: '',
+};
 
 describe('AuthService', () => {
-  let service: AuthService;
-  const mockUser = {
-    userId: 1,
-    username: 'user',
-    password: 'pass',
-  };
+  let authService: AuthService;
+  let companyService: CompanyService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,43 +30,63 @@ describe('AuthService', () => {
           signOptions: { expiresIn: '60s' },
         }),
       ],
-      providers: [AuthService],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            generateJwtAuth: jest.fn((user) => {
+              return { jwt: `${JSON.stringify(user)}` };
+            }),
+            validateUser: jest
+              .fn()
+              .mockImplementation((email, pass) =>
+                email === mockCompany.email && pass === mockCompany.password
+                  ? mockCompany
+                  : null,
+              ),
+          },
+        },
+        {
+          provide: CompanyService,
+          useValue: {
+            create: jest.fn(),
+            findByEmail: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
-    service.findOne = (user) => {
-      return new Promise<any>((resolve, reject) =>
-        user === mockUser.username ? resolve(mockUser) : resolve(undefined),
-      );
-    };
+    authService = module.get<AuthService>(AuthService);
+    companyService = module.get<CompanyService>(CompanyService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(authService).toBeDefined();
   });
 
   it('should validate user with username invalid', async () => {
-    const validate = await service.validateUser('user-away', 'pass');
+    const validate = await authService.validateUser('user-away', 'pass');
 
     expect(validate).toEqual(null);
   });
 
   it('should validate user with password invalid', async () => {
-    const validate = await service.validateUser('user', 'pass-wrong');
+    const validate = await authService.validateUser('user', 'pass-wrong');
 
     expect(validate).toEqual(null);
   });
 
   it('should validate user with user valid', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...epectedDataUser } = mockUser;
-    const validate = await service.validateUser('user', 'pass');
+    const validate = await authService.validateUser(
+      'test@example.com',
+      'hashedPassword',
+    );
 
-    expect(validate).toEqual(epectedDataUser);
+    expect(validate).toEqual(mockCompany);
   });
 
   it('should generate jwt token with size greater then 32', async () => {
-    const login = await service.login(mockUser);
+    const login = await authService.generateJwtAuth(mockCompany);
 
     expect(login.jwt.length).toBeGreaterThan(32);
   });

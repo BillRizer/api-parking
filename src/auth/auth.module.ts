@@ -6,10 +6,15 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { CompanyService } from 'src/company/company.service';
+import { CompanyModule } from 'src/company/company.module';
+import { EncryptModule } from 'src/encrypt/encrypt.module';
 
 @Module({
   imports: [
     PassportModule,
+    CompanyModule,
+    EncryptModule,
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {

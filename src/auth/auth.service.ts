@@ -1,43 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { CompanyService } from '../company/company.service';
+import { Company } from '../company/entities/company.entity';
+import { EncryptService } from '../encrypt/encrypt.service';
+import { IJwtBody, IJwtResponse } from './interface/jwt-response.interface';
 
 export type User = any;
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private companyService: CompanyService,
+    private readonly encrypt: EncryptService,
+  ) {}
 
-  // mocked function should to be removed
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'user',
-      password: 'pass',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'pass2',
-    },
-  ];
-  // mocked function should to be removed
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
-  }
-
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+  async validateUser(
+    email: string,
+    plainTextPass: string,
+  ): Promise<Company | null> {
+    const company: Company = await this.companyService.findByEmail(email);
+    if (!company) {
+      return null;
     }
-    return null;
+    const isPasswordValid = await this.verifyPassword(
+      plainTextPass,
+      company.password,
+    );
+    if (isPasswordValid === false) {
+      return null;
+    }
+    return company;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+  async generateJwtAuth(company: Company): Promise<IJwtResponse> {
+    const payload: IJwtBody = { companyId: company.id };
     return {
       jwt: this.jwtService.sign(payload),
     };
+  }
+
+  private async verifyPassword(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await this.encrypt.compareHash(plainTextPassword, hashedPassword);
   }
 }
