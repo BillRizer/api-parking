@@ -3,9 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { JwtModule } from '@nestjs/jwt';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { CompanyModule } from './company/company.module';
+import { EncryptModule } from './encrypt/encrypt.module';
 
 @Module({
   imports: [
@@ -20,11 +21,14 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
         MYSQL_DATABASE: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().required(),
+        BCRYPT_SALT: Joi.number().required(),
       }),
     }),
 
     DatabaseModule,
     AuthModule,
+    CompanyModule,
+    EncryptModule,
   ],
   providers: [
     {
