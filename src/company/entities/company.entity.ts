@@ -51,4 +51,18 @@ export class Company {
 
   @UpdateDateColumn()
   public updatedAt: string;
+
+  constructor(company?: Partial<Company>) {
+    this.id = company?.id;
+    this.name = company?.name;
+    this.email = company?.email;
+    this.address = company?.address;
+    this.cnpj = company?.cnpj;
+    this.max_amount_cars = company?.max_amount_cars;
+    this.max_amount_motorcycles = company?.max_amount_motorcycles;
+    this.password = company?.password;
+    this.phone = company?.phone;
+    this.createdAt = company?.createdAt;
+    this.updatedAt = company?.updatedAt;
+  }
 }

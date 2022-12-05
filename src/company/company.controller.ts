@@ -9,8 +9,8 @@ import {
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Public } from 'src/auth/decorator/public.decorator';
-import RequestWithCompanty from 'src/auth/interface/request-with-company.interface';
+import { Public } from '../auth/decorator/public.decorator';
+import RequestWithCompanty from '../auth/interface/request-with-company.interface';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';

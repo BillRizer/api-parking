@@ -38,20 +38,19 @@ export class CompanyService {
     }
     return null;
   }
-
-  findAll() {
-    return `This action returns all company`;
-  }
-
   async findOne(id: string) {
     return await this.companyRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
-  }
+  // findAll() {
+  //   return `This action returns all company`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
-  }
+  // update(id: number, updateCompanyDto: UpdateCompanyDto) {
+  //   return `This action updates a #${id} company`;
+  // }
+
+  // remove(id: number) {
+  //   return `This action removes a #${id} company`;
+  // }
 }
