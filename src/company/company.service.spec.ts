@@ -7,6 +7,7 @@ import { Company } from './entities/company.entity';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { NotFoundException } from '@nestjs/common';
 
 const companyData = {
   ...mockCompany,
@@ -37,6 +38,7 @@ describe('CompanyService', () => {
             findOne: jest.fn().mockResolvedValue(companyEntity),
             findOneOrFail: jest.fn().mockResolvedValue(companyEntity),
             merge: jest.fn().mockResolvedValue(updatedCompanyEntity),
+            softDelete: jest.fn().mockResolvedValue(undefined),
           },
         },
         {
@@ -138,7 +140,27 @@ describe('CompanyService', () => {
     it('should delete user', async () => {
       const deleted = await companyService.delete('fake-uuid');
 
-      expect(deleted).toEqual(true);
+      expect(deleted).toBeUndefined();
+      expect(companyRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(companyRepository.softDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception when not found', async () => {
+      jest
+        .spyOn(companyRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new Error());
+
+      expect(companyService.delete('fake-uuid')).rejects.toThrowError(
+        NotFoundException,
+      );
+    });
+
+    it('should throw an exception', async () => {
+      jest
+        .spyOn(companyRepository, 'softDelete')
+        .mockRejectedValueOnce(new Error());
+
+      expect(companyService.delete('fake-uuid')).rejects.toThrowError();
     });
   });
 });
