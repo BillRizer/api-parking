@@ -63,4 +63,9 @@ export class CompanyService {
     this.companyRepository.merge(company, updateCompanyDto);
     return await this.companyRepository.save(company);
   }
+
+  async delete(companyId: string) {
+    await this.findOneOrFail(companyId);
+    await this.companyRepository.softDelete(companyId);
+  }
 }
