@@ -80,5 +80,24 @@ describe('ParkingService', () => {
       expect(parkingRepository.create).toHaveBeenCalledTimes(1);
       expect(parkingRepository.save).toHaveBeenCalledTimes(1);
     });
+
+    it('should throw exception when vehicle not found', async () => {
+      const checkIn: CheckInParkingDto = {
+        checkIn: new Date(),
+        vehicle: { id: 'not-found-uuid' },
+        checkOut: null,
+      };
+
+      jest
+        .spyOn(vehicleService, 'findOneOrFail')
+        .mockRejectedValueOnce(new Error());
+
+      const checked = parkingService.checkIn(checkIn);
+
+      expect(checked).rejects.toThrowError();
+      expect(vehicleService.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(parkingRepository.create).toHaveBeenCalledTimes(0);
+      expect(parkingRepository.save).toHaveBeenCalledTimes(0);
+    });
   });
 });
