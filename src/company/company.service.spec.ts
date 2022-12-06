@@ -133,4 +133,12 @@ describe('CompanyService', () => {
       ).rejects.toThrowError();
     });
   });
+
+  describe('Delete', () => {
+    it('should delete user', async () => {
+      const deleted = await companyService.delete('fake-uuid');
+
+      expect(deleted).toEqual(true);
+    });
+  });
 });
