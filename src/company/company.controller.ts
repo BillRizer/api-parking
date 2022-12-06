@@ -46,4 +46,13 @@ export class CompanyController {
     }
     return this.companyService.update(companyId, updateCompanyDto);
   }
+
+  @Delete()
+  delete(@Request() req: RequestWithCompanty) {
+    const companyId = req.user.companyId;
+    if (!companyId) {
+      throw new UnauthorizedException();
+    }
+    return this.companyService.deleteById(companyId);
+  }
 }

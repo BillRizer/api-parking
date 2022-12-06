@@ -12,4 +12,5 @@ export const mockCompany: Company = {
   phone: '1234567890',
   createdAt: '',
   updatedAt: '',
+  deletedAt: '',
 };

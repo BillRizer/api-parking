@@ -138,7 +138,7 @@ describe('CompanyService', () => {
 
   describe('Delete', () => {
     it('should delete user', async () => {
-      const deleted = await companyService.delete('fake-uuid');
+      const deleted = await companyService.deleteById('fake-uuid');
 
       expect(deleted).toBeUndefined();
       expect(companyRepository.findOneOrFail).toHaveBeenCalledTimes(1);
@@ -150,7 +150,7 @@ describe('CompanyService', () => {
         .spyOn(companyRepository, 'findOneOrFail')
         .mockRejectedValueOnce(new Error());
 
-      expect(companyService.delete('fake-uuid')).rejects.toThrowError(
+      expect(companyService.deleteById('fake-uuid')).rejects.toThrowError(
         NotFoundException,
       );
     });
@@ -160,7 +160,7 @@ describe('CompanyService', () => {
         .spyOn(companyRepository, 'softDelete')
         .mockRejectedValueOnce(new Error());
 
-      expect(companyService.delete('fake-uuid')).rejects.toThrowError();
+      expect(companyService.deleteById('fake-uuid')).rejects.toThrowError();
     });
   });
 });

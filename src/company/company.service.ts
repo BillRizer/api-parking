@@ -64,7 +64,7 @@ export class CompanyService {
     return await this.companyRepository.save(company);
   }
 
-  async delete(companyId: string) {
+  async deleteById(companyId: string) {
     await this.findOneOrFail(companyId);
     await this.companyRepository.softDelete(companyId);
   }
