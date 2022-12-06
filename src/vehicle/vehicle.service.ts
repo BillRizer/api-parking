@@ -45,15 +45,19 @@ export class VehicleService {
     }
   }
 
-  findAll() {
-    return `This action returns all vehicle`;
+  async deleteById(vehicleId: string) {
+    await this.findOneOrFail(vehicleId);
+    await this.vehicleRepository.softDelete(vehicleId);
   }
+  // findAll() {
+  //   return `This action returns all vehicle`;
+  // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vehicle`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} vehicle`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} vehicle`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} vehicle`;
+  // }
 }
