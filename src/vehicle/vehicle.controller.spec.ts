@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockVehicle } from '../utils/mocks/vehicle';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
+import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehicleController } from './vehicle.controller';
 import { VehicleService } from './vehicle.service';
@@ -25,6 +26,7 @@ describe('VehicleController', () => {
             create: jest.fn().mockResolvedValue(vehicleEntity),
             findByPlate: jest.fn().mockResolvedValue(vehicleEntity),
             findOneOrFail: jest.fn().mockResolvedValue(vehicleEntity),
+            update: jest.fn(),
           },
         },
       ],
@@ -89,6 +91,34 @@ describe('VehicleController', () => {
       const vehicle = vehicleController.findOne('valid-id');
 
       expect(vehicle).rejects.toThrowError();
+    });
+  });
+
+  describe('update', () => {
+    it('should update vehicle', async () => {
+      const update: UpdateVehicleDto = {
+        ...mockVehicle,
+        color: 'black',
+      };
+      const updateEntity = new Vehicle(update);
+
+      jest.spyOn(vehicleService, 'update').mockResolvedValueOnce(updateEntity);
+      const updated = await vehicleController.update('valid-uuid', update);
+
+      expect(updated).toEqual(updateEntity);
+    });
+
+    it('should throw exception ', async () => {
+      const update: UpdateVehicleDto = {
+        ...mockVehicle,
+        color: 'black',
+      };
+
+      jest.spyOn(vehicleService, 'update').mockRejectedValueOnce(new Error());
+
+      expect(
+        vehicleController.update('invalid-uuid', update),
+      ).rejects.toThrowError();
     });
   });
 });
