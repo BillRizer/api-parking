@@ -99,5 +99,13 @@ describe('ParkingService', () => {
       expect(parkingRepository.create).toHaveBeenCalledTimes(0);
       expect(parkingRepository.save).toHaveBeenCalledTimes(0);
     });
+
+    it('should throw exception', async () => {
+      jest.spyOn(parkingService, 'checkIn').mockRejectedValueOnce(new Error());
+
+      const checked = parkingService.checkIn({} as CheckInParkingDto);
+
+      expect(checked).rejects.toThrowError();
+    });
   });
 });
