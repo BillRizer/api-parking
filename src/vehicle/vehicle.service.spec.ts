@@ -75,4 +75,22 @@ describe('VehicleService', () => {
       expect(vehicleService.create(localVehicle)).rejects.toThrowError();
     });
   });
+
+  describe('findByPlate', () => {
+    it('should found vehicle by plate', async () => {
+      jest
+        .spyOn(vehicleRepository, 'findOneBy')
+        .mockResolvedValueOnce(vehicleEntity);
+
+      expect(await vehicleService.findByPlate('true-plate')).toEqual(
+        vehicleEntity,
+      );
+    });
+
+    it('should not found vehicle by plate', async () => {
+      jest.spyOn(vehicleRepository, 'findOneBy').mockResolvedValueOnce(null);
+
+      expect(await vehicleService.findByPlate('true-plate')).toBeNull();
+    });
+  });
 });
