@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from '../encrypt/encrypt.service';
 import { Repository } from 'typeorm';
@@ -14,8 +14,11 @@ export class CompanyService {
     private encrypt: EncryptService,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto) {
+  async create(createCompanyDto: CreateCompanyDto): Promise<Company | null> {
     try {
+      if (await this.findByEmail(createCompanyDto.email)) {
+        throw new Error('Email address already exists.');
+      }
       const hashedPassword = await this.encrypt.encrypHash(
         createCompanyDto.password,
       );
@@ -27,7 +30,7 @@ export class CompanyService {
       return await this.companyRepository.save(created);
     } catch (error) {
       console.log(error);
-      return false;
+      return null;
     }
   }
 
@@ -38,19 +41,26 @@ export class CompanyService {
     }
     return null;
   }
-  async findOne(id: string) {
+
+  async findOne(id: string): Promise<Company | null> {
     return await this.companyRepository.findOne({ where: { id: id } });
   }
 
-  // findAll() {
-  //   return `This action returns all company`;
-  // }
+  async findOneOrFail(id: string): Promise<Company> {
+    try {
+      return await this.companyRepository.findOneOrFail({ where: { id: id } });
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
 
-  // update(id: number, updateCompanyDto: UpdateCompanyDto) {
-  //   return `This action updates a #${id} company`;
-  // }
+  async update(
+    companyId: string,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<Company> {
+    const company = await this.findOneOrFail(companyId);
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} company`;
-  // }
+    this.companyRepository.merge(company, updateCompanyDto);
+    return await this.companyRepository.save(company);
+  }
 }

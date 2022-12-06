@@ -14,6 +14,7 @@ import RequestWithCompanty from '../auth/interface/request-with-company.interfac
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Company } from './entities/company.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -26,7 +27,7 @@ export class CompanyController {
   }
 
   @Get()
-  getProfile(@Request() req: RequestWithCompanty) {
+  getProfile(@Request() req: RequestWithCompanty): Promise<Company> {
     const companyId = req.user.companyId;
     if (!companyId) {
       throw new UnauthorizedException();
@@ -34,23 +35,15 @@ export class CompanyController {
     return this.companyService.findOne(companyId);
   }
 
-  // // @Get()
-  // // findAll() {
-  // //   return this.companyService.findAll();
-  // // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.companyService.findOne(id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-  //   return this.companyService.update(+id, updateCompanyDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.companyService.remove(+id);
-  // }
+  @Patch()
+  update(
+    @Request() req: RequestWithCompanty,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+  ) {
+    const companyId = req.user.companyId;
+    if (!companyId) {
+      throw new UnauthorizedException();
+    }
+    return this.companyService.update(companyId, updateCompanyDto);
+  }
 }
