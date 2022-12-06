@@ -19,4 +19,9 @@ export class VehicleController {
   create(@Body() createVehicleDto: CreateVehicleDto) {
     return this.vehicleService.create(createVehicleDto);
   }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.vehicleService.findOneOrFail(id);
+  }
 }
