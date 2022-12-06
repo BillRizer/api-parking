@@ -8,6 +8,7 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { CompanyModule } from './company/company.module';
 import { EncryptModule } from './encrypt/encrypt.module';
 import { VehicleModule } from './vehicle/vehicle.module';
+import { ParkingModule } from './parking/parking.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
     CompanyModule,
     EncryptModule,
     VehicleModule,
+    ParkingModule,
   ],
   providers: [
     {
