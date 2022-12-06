@@ -1,9 +1,11 @@
 import { IsString } from 'class-validator';
+import { Parking } from '../../parking/entities/parking.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -33,6 +35,9 @@ export class Vehicle {
   @Column()
   @IsString()
   public type: string;
+
+  @OneToMany((type) => Parking, (vehicle) => Vehicle, { nullable: true })
+  Parking?: Parking;
 
   @CreateDateColumn({ name: 'created_at' })
   public createdAt: string;
