@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicle.service';
+import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 
 const vehicleData = {
   ...mockVehicle,
@@ -25,6 +26,8 @@ describe('VehicleService', () => {
             create: jest.fn(),
             findOneBy: jest.fn(),
             save: jest.fn(),
+            findOneOrFail: jest.fn(),
+            merge: jest.fn(),
           },
         },
       ],
@@ -91,6 +94,44 @@ describe('VehicleService', () => {
       jest.spyOn(vehicleRepository, 'findOneBy').mockResolvedValueOnce(null);
 
       expect(await vehicleService.findByPlate('true-plate')).toBeNull();
+    });
+  });
+
+  describe('update', () => {
+    it('should update vehicle by id', async () => {
+      const localUpdateVehicle: UpdateVehicleDto = {
+        ...mockVehicle,
+        color: 'yellow',
+      };
+      const localUpdateVehicleEntity = new Vehicle(localUpdateVehicle);
+      jest
+        .spyOn(vehicleRepository, 'findOneOrFail')
+        .mockResolvedValueOnce(localUpdateVehicleEntity);
+      jest
+        .spyOn(vehicleRepository, 'save')
+        .mockResolvedValueOnce(localUpdateVehicleEntity);
+
+      expect(
+        await vehicleService.update('fake-vehicle-id', localUpdateVehicle),
+      ).toEqual(localUpdateVehicleEntity);
+      expect(vehicleRepository.merge).toHaveBeenCalledTimes(1);
+      expect(vehicleRepository.save).toHaveBeenCalledTimes(1);
+    });
+    it('should throw an exception when id not found', async () => {
+      const localUpdateVehicle: UpdateVehicleDto = {
+        ...mockVehicle,
+        color: 'yellow',
+      };
+      jest
+        .spyOn(vehicleRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new Error());
+
+      const result = vehicleService.update(
+        'not-found-uuid',
+        localUpdateVehicle,
+      );
+
+      expect(result).rejects.toThrowError();
     });
   });
 });
