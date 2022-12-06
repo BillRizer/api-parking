@@ -5,6 +5,7 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -25,7 +26,7 @@ export class Vehicle {
   @IsString()
   public color: string;
 
-  @Column()
+  @Column({ unique: true })
   @IsString()
   public plate: string;
 

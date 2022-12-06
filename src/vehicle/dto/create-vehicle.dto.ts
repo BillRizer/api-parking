@@ -1,23 +1,23 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateVehicleDto {
   @IsString()
-  @IsNotEmpty({ message: 'Brand Field missing' })
+  @IsOptional()
   brand: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Model Field missing' })
+  @IsOptional()
   model: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Color Field missing' })
+  @IsOptional()
   color: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Plate Field missing' })
+  @IsOptional()
   plate: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Name Field missing' })
+  @IsOptional()
   type: string;
 }

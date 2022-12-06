@@ -31,17 +31,27 @@ export class VehicleService {
   }
 
   async update(vehicleId: string, updateVehicleDto: UpdateVehicleDto) {
-    const vehicle = await this.findOneOrFail(vehicleId);
+    try {
+      const vehicle = await this.findOneOrFail(vehicleId);
 
-    this.vehicleRepository.merge(vehicle, updateVehicleDto);
-    return await this.vehicleRepository.save(vehicle);
+      this.vehicleRepository.merge(vehicle, updateVehicleDto);
+      return await this.vehicleRepository.save(vehicle);
+    } catch (error) {
+      //TODO: add in log
+      // error. sqlMessage and error.sql
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new NotFoundException(
+          'Could not update, this plate alwaready exists',
+        );
+      }
+    }
   }
 
   async findOneOrFail(id: string): Promise<Vehicle> {
     try {
       return await this.vehicleRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
-      throw new NotFoundException(error.message);
+      throw new NotFoundException('Could not find this Vehicle');
     }
   }
 
