@@ -50,7 +50,7 @@ export class CompanyService {
     try {
       return await this.companyRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
-      throw new NotFoundException(error.message);
+      throw new NotFoundException('Could not find this company');
     }
   }
 
