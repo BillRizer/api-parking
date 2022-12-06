@@ -6,6 +6,7 @@ import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicle.service';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import { NotFoundException } from '@nestjs/common';
 
 const vehicleData = {
   ...mockVehicle,
@@ -28,6 +29,7 @@ describe('VehicleService', () => {
             save: jest.fn(),
             findOneOrFail: jest.fn(),
             merge: jest.fn(),
+            softDelete: jest.fn().mockReturnValue(undefined),
           },
         },
       ],
@@ -132,6 +134,45 @@ describe('VehicleService', () => {
       );
 
       expect(result).rejects.toThrowError();
+    });
+  });
+
+  describe('deleteById', () => {
+    it('should delete vehicle', async () => {
+      jest
+        .spyOn(vehicleRepository, 'findOneOrFail')
+        .mockResolvedValue(vehicleEntity);
+
+      const deleted = await vehicleService.deleteById('found-uuid');
+
+      expect(deleted).toBeUndefined();
+      expect(vehicleRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(vehicleRepository.softDelete).toHaveBeenCalledTimes(1);
+    });
+    it('should throw exception when not found', async () => {
+      jest
+        .spyOn(vehicleRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new Error());
+
+      const deleted = vehicleService.deleteById('not-found-uuid');
+
+      expect(deleted).rejects.toThrowError(NotFoundException);
+      expect(vehicleRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(vehicleRepository.softDelete).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw exception', async () => {
+      jest
+        .spyOn(vehicleRepository, 'findOneOrFail')
+        .mockResolvedValue(vehicleEntity);
+      jest
+        .spyOn(vehicleRepository, 'softDelete')
+        .mockRejectedValueOnce(new Error());
+
+      const deleted = vehicleService.deleteById('founded-uuid');
+
+      expect(deleted).rejects.toThrowError();
+      expect(vehicleRepository.findOneOrFail).toHaveBeenCalledTimes(1);
     });
   });
 });
