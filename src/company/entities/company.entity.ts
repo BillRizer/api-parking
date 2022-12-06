@@ -3,6 +3,7 @@ import { IsNumber, MaxLength, MinLength } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -46,11 +47,14 @@ export class Company {
   @IsNumber()
   public max_amount_cars: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   public createdAt: string;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   public updatedAt: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  public deletedAt: string;
 
   constructor(company?: Partial<Company>) {
     this.id = company?.id;
@@ -64,5 +68,6 @@ export class Company {
     this.phone = company?.phone;
     this.createdAt = company?.createdAt;
     this.updatedAt = company?.updatedAt;
+    this.deletedAt = company?.deletedAt;
   }
 }
