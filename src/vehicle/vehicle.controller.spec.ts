@@ -27,6 +27,7 @@ describe('VehicleController', () => {
             findByPlate: jest.fn().mockResolvedValue(vehicleEntity),
             findOneOrFail: jest.fn().mockResolvedValue(vehicleEntity),
             update: jest.fn(),
+            deleteById: jest.fn(),
           },
         },
       ],
@@ -119,6 +120,23 @@ describe('VehicleController', () => {
       expect(
         vehicleController.update('invalid-uuid', update),
       ).rejects.toThrowError();
+    });
+  });
+
+  describe('remove', () => {
+    it('should delete vehicle', async () => {
+      const deleted = await vehicleController.remove('valid-uuid');
+
+      expect(deleted).toBeUndefined();
+    });
+    it('should throw exception', async () => {
+      jest
+        .spyOn(vehicleController, 'remove')
+        .mockRejectedValueOnce(new Error());
+
+      const deleted = vehicleController.remove('valid-uuid');
+
+      expect(deleted).rejects.toThrowError();
     });
   });
 });
