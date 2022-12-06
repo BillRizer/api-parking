@@ -7,6 +7,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { CompanyModule } from './company/company.module';
 import { EncryptModule } from './encrypt/encrypt.module';
+import { VehicleModule } from './vehicle/vehicle.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { EncryptModule } from './encrypt/encrypt.module';
     AuthModule,
     CompanyModule,
     EncryptModule,
+    VehicleModule,
   ],
   providers: [
     {
