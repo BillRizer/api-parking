@@ -24,4 +24,14 @@ export class VehicleController {
   findOne(@Param('id') id: string) {
     return this.vehicleService.findOneOrFail(id);
   }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
+    return this.vehicleService.update(id, updateVehicleDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.vehicleService.deleteById(id);
+  }
 }
