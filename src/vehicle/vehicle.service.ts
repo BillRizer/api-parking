@@ -1,11 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import { Vehicle } from './entities/vehicle.entity';
 
 @Injectable()
 export class VehicleService {
-  create(createVehicleDto: CreateVehicleDto) {
-    return 'This action adds a new vehicle';
+  constructor(
+    @InjectRepository(Vehicle)
+    private vehicleRepository: Repository<Vehicle>,
+  ) {}
+
+  async create(createVehicleDto: CreateVehicleDto) {
+    try {
+      if (await this.findByPlate(createVehicleDto.plate)) {
+        throw new Error('Vehicle already exists.');
+      }
+      const created = await this.vehicleRepository.create({
+        ...createVehicleDto,
+      });
+      return await this.vehicleRepository.save(created);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async findByPlate(plate: string) {
+    return await this.vehicleRepository.findOneBy({ plate: plate });
   }
 
   findAll() {
