@@ -3,7 +3,7 @@ services:
     mysql-db:
         image: mysql:5.7
         ports:
-            - "3306:3306"  
+            - "3306:3306"
         environment:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
             - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -15,7 +15,25 @@ services:
         networks:
             - netprivate
 
-
+    api:
+        container_name: api
+        build:
+            context: ../
+            target: development
+            dockerfile: ./.docker/Dockerfile
+        volumes:
+            - ../:/usr/src/app
+            - /usr/src/app/node_modules
+        ports:
+            - ${SERVER_PORT}:${SERVER_PORT}
+            - 9229:9229
+        command: npm run start:dev
+        env_file:
+            - .env.dev
+        depends_on:
+            - mysql-db
+        networks:
+            - netprivate
 networks:
     netprivate:
 volumes:
