@@ -8,6 +8,8 @@ import {
   Delete,
   Request,
   UnauthorizedException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
@@ -24,37 +26,45 @@ export class CompanyController {
 
   @Public()
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  async create(@Body() createCompanyDto: CreateCompanyDto) {
+    return await this.companyService.create(createCompanyDto);
   }
 
   @Get()
-  getProfile(@Request() req: RequestWithCompanty): Promise<Company> {
+  async getProfile(@Request() req: RequestWithCompanty): Promise<Company> {
     const companyId = req.user.companyId;
     if (!companyId) {
       throw new UnauthorizedException();
     }
-    return this.companyService.findOne(companyId);
+    return await this.companyService.findOne(companyId);
   }
 
   @Patch()
-  update(
+  async update(
     @Request() req: RequestWithCompanty,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
-    const companyId = req.user.companyId;
-    if (!companyId) {
-      throw new UnauthorizedException();
+    try {
+      const companyId = req.user.companyId;
+      if (!companyId) {
+        throw new UnauthorizedException();
+      }
+      return await this.companyService.update(companyId, updateCompanyDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-    return this.companyService.update(companyId, updateCompanyDto);
   }
 
   @Delete()
   delete(@Request() req: RequestWithCompanty) {
-    const companyId = req.user.companyId;
-    if (!companyId) {
-      throw new UnauthorizedException();
+    try {
+      const companyId = req.user.companyId;
+      if (!companyId) {
+        throw new UnauthorizedException();
+      }
+      return this.companyService.deleteById(companyId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-    return this.companyService.deleteById(companyId);
   }
 }

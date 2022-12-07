@@ -59,9 +59,28 @@ export class CompanyService {
     updateCompanyDto: UpdateCompanyDto,
   ): Promise<Company> {
     const company = await this.findOneOrFail(companyId);
-
-    this.companyRepository.merge(company, updateCompanyDto);
-    return await this.companyRepository.save(company);
+    if (updateCompanyDto.old_password?.length > 0) {
+      const validPassword = await this.encrypt.compareHash(
+        updateCompanyDto.old_password,
+        company.password,
+      );
+      if (!validPassword) {
+        throw new Error('The old password is incorrect');
+      }
+      updateCompanyDto.password = await this.encrypt.encrypHash(
+        updateCompanyDto.password,
+      );
+    }
+    try {
+      this.companyRepository.merge(company, updateCompanyDto);
+      return await this.companyRepository.save(company);
+    } catch (error) {
+      //TODO: add in log
+      // error. sqlMessage and error.sql
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new NotFoundException('Could not update, this email exists');
+      }
+    }
   }
 
   async deleteById(companyId: string) {
