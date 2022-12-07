@@ -7,6 +7,7 @@ import { ParkingService } from './parking.service';
 import { CheckInParkingDto } from './dto/check-in.dto';
 import { Repository } from 'typeorm';
 import { mockCheckIn } from '../utils/mocks/parking';
+import { CheckOutParkingDto } from './dto/check-out.dto';
 
 const checkInData = {
   ...mockCheckIn,
@@ -29,6 +30,8 @@ describe('ParkingService', () => {
           useValue: {
             create: jest.fn(),
             save: jest.fn(),
+            merge: jest.fn(),
+            findOneOrFail: jest.fn(),
           },
         },
         {
@@ -106,6 +109,53 @@ describe('ParkingService', () => {
       const checked = parkingService.checkIn({} as CheckInParkingDto);
 
       expect(checked).rejects.toThrowError();
+    });
+
+    describe('checkOut', () => {
+      it('should set checkOut in parking ID', async () => {
+        const checkOut: CheckOutParkingDto = {
+          parkingId: 'fake-uuid',
+          checkOut: new Date(),
+        };
+        jest
+          .spyOn(parkingRepository, 'findOneOrFail')
+          .mockResolvedValueOnce(checkInEntity);
+        jest
+          .spyOn(parkingRepository, 'save')
+          .mockResolvedValueOnce(checkInEntity);
+
+        const checked = await parkingService.checkOut(checkOut);
+
+        expect(checked).toEqual(checkInEntity);
+        expect(parkingRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+        expect(parkingRepository.merge).toHaveBeenCalledTimes(1);
+        expect(parkingRepository.save).toHaveBeenCalledTimes(1);
+      });
+
+      it('should throw exception when vehicle not found', async () => {
+        const checkOut: CheckOutParkingDto = {
+          parkingId: 'fake-uuid',
+          checkOut: new Date(),
+        };
+
+        jest
+          .spyOn(vehicleService, 'findOneOrFail')
+          .mockRejectedValueOnce(new Error());
+
+        const checked = parkingService.checkOut(checkOut);
+
+        expect(checked).rejects.toThrowError();
+      });
+
+      it('should throw exception', async () => {
+        jest
+          .spyOn(parkingService, 'checkOut')
+          .mockRejectedValueOnce(new Error());
+
+        const checked = parkingService.checkOut({} as CheckOutParkingDto);
+
+        expect(checked).rejects.toThrowError();
+      });
     });
   });
 });
