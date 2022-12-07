@@ -9,6 +9,7 @@ import { CompanyModule } from './company/company.module';
 import { EncryptModule } from './encrypt/encrypt.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { ParkingModule } from './parking/parking.module';
+import { AnalyticModule } from './analytic/analytic.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ParkingModule } from './parking/parking.module';
     EncryptModule,
     VehicleModule,
     ParkingModule,
+    AnalyticModule,
   ],
   providers: [
     {
