@@ -50,6 +50,24 @@ export class ParkingController {
     return await this.parkingService.checkIn(checkInParkingDto);
   }
 
+  @Get('check-out/:id')
+  @ApiOkResponse(checkOut.ApiResponseSuccessNotes)
+  @ApiBadRequestResponse(checkOut.ApiResponseBadRequestNotes)
+  async checkOut(@Param('id') id: string) {
+    //TODO verify company ID, if is a owner
+    const parking = await this.parkingService.findOneOrFail(id);
+    if (parking.checkOut != null) {
+      throw new HttpException(
+        `Checkout has already been done in ${parking.checkOut}, it is not possible to do it again`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const checkOutParkingDto: CheckOutParkingDto = {
+      parkingId: id,
+      checkOut: new Date(getCurrentTimeUTC()),
+    };
+    return await this.parkingService.checkOut(checkOutParkingDto);
+  }
   // @Get()
   // findAll() {
   //   return this.parkingService.findAll();
