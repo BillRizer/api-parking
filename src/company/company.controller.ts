@@ -9,6 +9,7 @@ import {
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import RequestWithCompanty from '../auth/interface/request-with-company.interface';
 import { CompanyService } from './company.service';
@@ -17,6 +18,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 
 @Controller('company')
+@ApiTags('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 

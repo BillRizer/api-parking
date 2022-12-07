@@ -79,6 +79,7 @@ describe('CompanyService', () => {
       expect(companyRepository.findOneBy).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('create', () => {
     it('should create user', async () => {
       const newCompany: CreateCompanyDto = {
