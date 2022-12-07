@@ -19,7 +19,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         // synchronize: (process.env.DB_SYNCHRONIZE === 'true'),
         synchronize: true,
         useUTC: true,
-
+        timezone: 'Z',
         keepConnectionAlive: true,
         migrations: ['/migration/*.ts'],
         cli: { migrationsDir: 'migration' },
