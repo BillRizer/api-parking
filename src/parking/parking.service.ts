@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VehicleService } from '../vehicle/vehicle.service';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CheckInParkingDto } from './dto/check-in.dto';
 import { UpdateParkingDto } from './dto/update-parking.dto';
 import { Parking } from './entities/parking.entity';
+import { CheckOutParkingDto } from './dto/check-out.dto';
 
 @Injectable()
 export class ParkingService {
@@ -30,6 +31,29 @@ export class ParkingService {
     }
   }
 
+  async checkOut(checkOutParkingDto: CheckOutParkingDto) {
+    try {
+      const checkOut = await this.findOneOrFail(checkOutParkingDto.parkingId);
+      this.parkingRepository.merge(checkOut, checkOutParkingDto);
+      return await this.parkingRepository.save(checkOut);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async findOneOrFail(id: string): Promise<Parking> {
+    try {
+      return await this.parkingRepository.findOneOrFail({ where: { id: id } });
+    } catch (error) {
+      throw new NotFoundException('Could not find this checkIn/checkOut');
+    }
+  }
+
+  async getIfExistCheckinOpen(vehicleId: string): Promise<Parking | null> {
+    return await this.parkingRepository.findOne({
+      where: { vehicle: { id: vehicleId }, checkOut: IsNull() },
+    });
+  }
   // async findOneOrFail(id: string): Promise<Parking> {
   //   try {
   //     return await this.parkingRepository.findOneOrFail({ where: { id: id } });
