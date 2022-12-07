@@ -11,4 +11,7 @@ export class CheckInParkingDto {
 
   @IsObject()
   public vehicle: { id: string };
+
+  @IsObject()
+  public company: { id: string };
 }

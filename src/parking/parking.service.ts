@@ -49,9 +49,16 @@ export class ParkingService {
     }
   }
 
-  async getIfExistCheckinOpen(vehicleId: string): Promise<Parking | null> {
+  async getIfExistCheckinOpen(
+    vehicleId: string,
+    companyId: string,
+  ): Promise<Parking | null> {
     return await this.parkingRepository.findOne({
-      where: { vehicle: { id: vehicleId }, checkOut: IsNull() },
+      where: {
+        vehicle: { id: vehicleId },
+        company: { id: companyId },
+        checkOut: IsNull(),
+      },
     });
   }
   // async findOneOrFail(id: string): Promise<Parking> {

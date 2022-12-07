@@ -12,6 +12,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Company } from '../../company/entities/company.entity';
 
 @Entity()
 export class Parking {
@@ -30,6 +31,10 @@ export class Parking {
   @JoinColumn({ name: 'vehicleId' })
   vehicle: Vehicle;
 
+  @ManyToOne((type) => Company, (parking) => Parking, { nullable: false })
+  @JoinColumn({ name: 'companyId' })
+  company: Company;
+
   @CreateDateColumn({ name: 'created_at' })
   public createdAt: string;
 
@@ -44,6 +49,7 @@ export class Parking {
     this.checkIn = parking?.checkIn;
     this.checkOut = parking?.checkOut;
     this.vehicle = parking?.vehicle;
+    this.company = parking?.company;
     this.createdAt = parking?.createdAt;
     this.updatedAt = parking?.updatedAt;
     this.deletedAt = parking?.deletedAt;

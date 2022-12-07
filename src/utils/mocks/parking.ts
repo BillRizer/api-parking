@@ -1,4 +1,5 @@
 import { Parking } from '../../parking/entities/parking.entity';
+import { mockCompany } from './company';
 import { mockVehicle } from './vehicle';
 
 export const mockCheckIn: Parking = {
@@ -7,6 +8,9 @@ export const mockCheckIn: Parking = {
   checkOut: null,
   vehicle: {
     ...mockVehicle,
+  },
+  company: {
+    ...mockCompany,
   },
   createdAt: '',
   updatedAt: '',

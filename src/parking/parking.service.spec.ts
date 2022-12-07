@@ -71,6 +71,7 @@ describe('ParkingService', () => {
         checkIn: new Date(),
         vehicle: { id: 'not-found-uuid' },
         checkOut: null,
+        company: { id: 'not-found-uuid' },
       };
       jest
         .spyOn(parkingRepository, 'save')
@@ -89,6 +90,7 @@ describe('ParkingService', () => {
         checkIn: new Date(),
         vehicle: { id: 'not-found-uuid' },
         checkOut: null,
+        company: { id: 'not-found-uuid' },
       };
 
       jest

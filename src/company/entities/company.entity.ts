@@ -1,10 +1,12 @@
 import { Exclude } from 'class-transformer';
 import { IsNumber, MaxLength, MinLength } from 'class-validator';
+import { Parking } from '../../parking/entities/parking.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -46,6 +48,9 @@ export class Company {
   @Column()
   @IsNumber()
   public max_amount_cars: number;
+
+  @OneToMany((type) => Parking, (vehicle) => Company, { nullable: true })
+  Parking?: Parking;
 
   @CreateDateColumn({ name: 'created_at' })
   public createdAt: string;
